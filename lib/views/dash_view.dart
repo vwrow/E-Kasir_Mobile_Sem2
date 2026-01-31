@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:postman_penugasan1/models/user_login.dart';
+import 'package:postman_penugasan1/widgets/navBar.dart';
 
 class DashboardView extends StatefulWidget {
   const DashboardView({super.key});
@@ -37,6 +38,21 @@ class _DashboardViewState extends State<DashboardView> {
     getUserLogin();
   }
 
+  IconData get chatIcon {
+    if (role == "admin") {
+      return Icons.chat_bubble_outline_rounded;
+    }
+    return Icons.support_agent_outlined;
+  }
+
+  void chatLink() {
+    if (role == "user") {
+      Navigator.pushReplacementNamed(context, '/message');
+    } else if (role == "admin") {
+      Navigator.pushReplacementNamed(context, '/message');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final themeColor = const Color.fromARGB(255, 230, 114, 41);
@@ -44,12 +60,13 @@ class _DashboardViewState extends State<DashboardView> {
     //   begin: Alignment.topLeft,
     //   end: Alignment.bottomRight,
     //   colors: [
-    //     const Color.fromARGB(255, 247, 138, 70), // Lighter orange
-    //     themeColor, // Original orange
-    //     const Color.fromARGB(255, 192, 76, 13), // Darker orange
+    //     const Color.fromARGB(255, 247, 138, 70),
+    //     themeColor,
+    //     const Color.fromARGB(255, 192, 76, 13),
     //   ],
     // );
     return Scaffold(
+      bottomNavigationBar: BottomNav(0),
       body: Container(
         // decoration: BoxDecoration(gradient: gradient),
         decoration: BoxDecoration(color: themeColor),
@@ -141,7 +158,7 @@ class _DashboardViewState extends State<DashboardView> {
                           boxShadow: const [
                             BoxShadow(
                               color: Color.fromARGB(66, 0, 0, 0),
-                              blurRadius: 24,
+                              blurRadius: 25,
                               offset: Offset(0, 5),
                             ),
                           ],
@@ -181,12 +198,12 @@ class _DashboardViewState extends State<DashboardView> {
                           color: Colors.white,
                         ),
                         child: Icon(
-                          Icons.shopping_cart_outlined,
+                          chatIcon,
                           size: 20,
                           color: Color.fromARGB(230, 0, 0, 0),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: chatLink,
                     ),
                     const SizedBox(width: 8),
                     IconButton(
