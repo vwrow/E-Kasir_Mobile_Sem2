@@ -7,7 +7,7 @@ import 'package:http/http.dart' as http;
 class UserService {
   
   Future registerUser(data) async {
-    var uri = Uri.parse(url.BaseUrl + "/auth/register");
+    var uri = Uri.parse(url.apiUrl + "/register");
     var register = await http.post(uri, body: data);
 
     if (register.statusCode == 200) {
@@ -44,7 +44,7 @@ class UserService {
   }
 
   Future loginUser(data) async {
-    var uri = Uri.parse(url.BaseUrl + "/auth/login");
+    var uri = Uri.parse(url.apiUrl + "/login");
     var login = await http.post(uri, body: data);
 
     if (login.statusCode == 200) {

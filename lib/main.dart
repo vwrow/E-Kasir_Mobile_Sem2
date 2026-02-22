@@ -6,6 +6,7 @@ import 'package:postman_penugasan1/views/messages_view.dart';
 import 'package:postman_penugasan1/views/register_user_view.dart';
 import 'package:postman_penugasan1/views/splash_view.dart';
 import 'package:postman_penugasan1/views/transaksi_view.dart';
+import 'package:postman_penugasan1/views/test.dart';
 
 void main() {
   runApp(
@@ -18,8 +19,9 @@ void main() {
         '/login': (context) => LoginView(),
         '/dash': (comtext) => DashboardView(),
         '/message': (context) => MessageView(),
-        '/items' : (context) => ItemsView(),
-        '/trans' : (context) => TransactionView(),
+        '/items': (context) => ItemsView(),
+        '/trans': (context) => TransactionView(),
+        '/test': (context) => TestPage(),
       },
     ),
   );

@@ -52,9 +52,9 @@ class _LoginViewState extends State<LoginView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(height: 80),
+            const SizedBox(height: 100),
             Image.asset('assets/logo1.png', height: 250, width: 250),
-            const SizedBox(height: 97),
+            const SizedBox(height: 135),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
@@ -148,7 +148,7 @@ class _LoginViewState extends State<LoginView> {
                                 print(result.message);
                                 if (result.status == true) {
                                   AlertMessage().showAlert(
-                                    context,
+                                   context,
                                     result.message,
                                     true,
                                   );
@@ -180,7 +180,9 @@ class _LoginViewState extends State<LoginView> {
                                     height: 20,
                                     width: 20,
                                     child: CircularProgressIndicator(
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.white,
+                                      ),
                                       strokeWidth: 2.0,
                                     ),
                                   ),
@@ -216,7 +218,10 @@ class _LoginViewState extends State<LoginView> {
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
                               onPressed: () {
-                                Navigator.pushReplacementNamed(context,'/register',);
+                                Navigator.pushReplacementNamed(
+                                  context,
+                                  '/register',
+                                );
                               },
                               child: Text(
                                 "Register",

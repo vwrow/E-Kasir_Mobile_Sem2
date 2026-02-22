@@ -4,14 +4,14 @@ import 'package:postman_penugasan1/services/products.dart';
 import 'package:postman_penugasan1/models/response_data_list.dart';
 import 'package:postman_penugasan1/models/product_models.dart';
 
-class ItemsView extends StatefulWidget {
-  const ItemsView({super.key});
+class TestPage extends StatefulWidget {
+  const TestPage({super.key});
 
   @override
-  State<ItemsView> createState() => _ItemsView();
+  State<TestPage> createState() => _TestPage();
 }
 
-class _ItemsView extends State<ItemsView> {
+class _TestPage extends State<TestPage> {
   List<ProductModel>? product;
 
   Future<void> getProduct() async {
@@ -190,7 +190,7 @@ class _ItemsView extends State<ItemsView> {
                   crossAxisCount: 2,
                   crossAxisSpacing: 20,
                   mainAxisSpacing: 20,
-                  childAspectRatio: 0.6,
+                  childAspectRatio: 0.66,
                 ),
                 itemBuilder: (context, index) {
                   final p = product![index];
