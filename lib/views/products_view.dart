@@ -13,11 +13,14 @@ class ItemsView extends StatefulWidget {
 
 class _ItemsView extends State<ItemsView> {
   List<ProductModel>? product;
+  bool _isLoading = true;
 
   Future<void> getProduct() async {
+    setState(() => _isLoading = true);
     ResponseDataList getProduct = await ProductService().getProducts();
     setState(() {
       product = (getProduct.data ?? []).cast<ProductModel>();
+      _isLoading = false;
     });
   }
 
@@ -116,61 +119,61 @@ class _ItemsView extends State<ItemsView> {
     return Scaffold(
       backgroundColor: themeColor,
       bottomNavigationBar: BottomNav(1),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 60),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 32.0,
-                vertical: 5,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Text(
-                        "Products",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "Popins",
-                        ),
-                      ),
-                      IconButton(
-                        hoverColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        icon: Container(
-                          height: 30,
-                          width: 30,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            color: Colors.white,
-                          ),
-                          child: Icon(
-                            Icons.add,
-                            size: 20,
-                            color: Color.fromARGB(230, 0, 0, 0),
-                          ),
-                        ),
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: 60),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 32.0,
+              vertical: 5,
             ),
-            SizedBox(height: 26),
-            Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    const Text(
+                      "Products",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: "Popins",
+                      ),
+                    ),
+                    IconButton(
+                      hoverColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      icon: Container(
+                        height: 30,
+                        width: 30,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(30),
+                          color: Colors.white,
+                        ),
+                        child: const Icon(
+                          Icons.add,
+                          size: 20,
+                          color: Color.fromARGB(230, 0, 0, 0),
+                        ),
+                      ),
+                      onPressed: () {},
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          Expanded(
+            child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.only(
+                borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(30),
                   topRight: Radius.circular(30),
                 ),
@@ -182,24 +185,28 @@ class _ItemsView extends State<ItemsView> {
                   ),
                 ],
               ),
-              child: GridView.builder(
-                itemCount: product?.length ?? 0,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
-                  childAspectRatio: 0.6,
-                ),
-                itemBuilder: (context, index) {
-                  final p = product![index];
-                  return _buildProductCard(p, washedTheme);
-                },
-              ),
+              child: _isLoading
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Color.fromARGB(255, 230, 114, 41),
+                      ),
+                    )
+                  : GridView.builder(
+                      itemCount: product?.length ?? 0,
+                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 20,
+                        mainAxisSpacing: 20,
+                        childAspectRatio: 0.6,
+                      ),
+                      itemBuilder: (context, index) {
+                        final p = product![index];
+                        return _buildProductCard(p, washedTheme);
+                      },
+                    ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
