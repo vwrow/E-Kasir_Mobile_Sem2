@@ -3,6 +3,8 @@ import 'package:postman_penugasan1/widgets/navBar.dart';
 import 'package:postman_penugasan1/services/products.dart';
 import 'package:postman_penugasan1/models/response_data_list.dart';
 import 'package:postman_penugasan1/models/product_models.dart';
+import 'package:postman_penugasan1/views/add-edit_product_view.dart';
+import 'package:postman_penugasan1/widgets/alert.dart';
 
 class ItemsView extends StatefulWidget {
   const ItemsView({super.key});
@@ -14,6 +16,7 @@ class ItemsView extends StatefulWidget {
 class _ItemsView extends State<ItemsView> {
   List<ProductModel>? product;
   bool _isLoading = true;
+  List action = ["Update", "Hapus"];
 
   Future<void> getProduct() async {
     setState(() => _isLoading = true);
@@ -32,24 +35,26 @@ class _ItemsView extends State<ItemsView> {
 
   Widget _buildProductCard(ProductModel p, Color washedTheme) {
     return ClipRRect(
+  borderRadius: BorderRadius.circular(20),
+  child: Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
       borderRadius: BorderRadius.circular(20),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: washedTheme,
-            width: 2.0,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+      border: Border.all(
+        color: washedTheme,
+        width: 2.0,
+      ),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Stack(
           children: [
             AspectRatio(
               aspectRatio: 1,
               child: (p.image != null && p.image!.isNotEmpty)
                   ? Image.network(
-                      p.image!,
+                      p.image!, // Mapping to String? image
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
@@ -63,53 +68,115 @@ class _ItemsView extends State<ItemsView> {
                       child: const Icon(Icons.image, color: Colors.black),
                     ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    p.namaBarang ?? "Nama Product",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "Popins",
-                    ),
+            // Positioned PopupMenuButton
+            Positioned(
+              top: 5,
+              right: 5,
+              child: PopupMenuButton(
+                icon: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.2),
+                    shape: BoxShape.circle,
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    p.deskripsi ?? "Deskripsi singkat panjang banget",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Color.fromARGB(175, 0, 0, 0),
-                      fontSize: 12,
-                      fontFamily: "Popins",
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    "Rp. ${p.harga ?? 0}",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "Popins",
-                    ),
-                  ),
-                ],
+                  child: const Icon(Icons.more_vert, color: Colors.white),
+                ),
+                itemBuilder: (BuildContext context) {
+                  return action.map((r) {
+                    return PopupMenuItem(
+                      onTap: () async {
+                        if (r == "Update") {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TambahProductView(
+                                title: "Update Product",
+                                item: p, // Passing the current object 'p'
+                              ),
+                            ),
+                          );
+                        } else {
+                          var results = await AlertMessage().showAlertDialog(context);
+                          if (results != null && results.containsKey('status')) {
+                            if (results['status'] == true) {
+                              var res = await ProductService().hapusProduct(
+                                context,
+                                p.id, // Mapping to int? id
+                              );
+                              if (res.status == true) {
+                                AlertMessage().showAlert(context, res.message, true);
+                                getProduct();
+                              } else {
+                                AlertMessage().showAlert(context, res.message, false);
+                              }
+                            }
+                          }
+                        }
+                      },
+                      value: r,
+                      child: Text(r),
+                    );
+                  }).toList();
+                },
               ),
             ),
           ],
         ),
-      ),
-    );
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                p.namaBarang ?? "Nama Barang", // Mapping to String? namaBarang
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Popins",
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                p.deskripsi ?? "Deskripsi tidak tersedia", // Mapping to String? deskripsi
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.black54,
+                  fontSize: 12,
+                  fontFamily: "Popins",
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                "Stok: ${p.stok ?? 0}", // Mapping to int? stok
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 11,
+                  fontFamily: "Popins",
+                ),
+              ),
+              const SizedBox(height: 3),
+              Text(
+                "Rp. ${p.harga ?? 0.0}", // Mapping to double? harga
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(
+                  color: Colors.black,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: "Popins",
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    ),
+  ),
+);
   }
 
   @override
@@ -159,7 +226,15 @@ class _ItemsView extends State<ItemsView> {
                           color: Color.fromARGB(230, 0, 0, 0),
                         ),
                       ),
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) =>
+                      TambahProductView(title: "Tambah Product", item: null),
+                ),
+              );
+                      },
                     ),
                   ],
                 ),

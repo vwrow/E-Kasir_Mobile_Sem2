@@ -55,9 +55,9 @@ class _RegisterUserViewState extends State<RegisterUserView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(height: 50),
+            const SizedBox(height: 120),
             Image.asset('assets/logo1.png', height: 250, width: 250),
-            const SizedBox(height: 55),
+            const SizedBox(height: 75),
             Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),

@@ -68,4 +68,36 @@ class AlertMessage {
       entry.remove();
     });
   }
+
+  Future showAlertDialog(BuildContext context) {
+    // set up the buttons
+    Widget cancelButton = MaterialButton(
+      shape: BeveledRectangleBorder(side: BorderSide()),
+      child: Text("Cancel"),
+      onPressed: () {
+        Navigator.of(context).pop({'status': false});
+      },
+    );
+    Widget continueButton = MaterialButton(
+      child: Text("Continue"),
+      onPressed: () {
+        Navigator.of(context).pop({'status': true});
+      },
+    );
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      title: Text("AlertDialog"),
+      content: Text(
+        "Yakin ingin menghapus?",
+      ),
+      actions: [cancelButton, continueButton],
+    );
+    // show the dialog
+    return showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 }

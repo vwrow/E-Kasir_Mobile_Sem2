@@ -52,7 +52,7 @@ class _LoginViewState extends State<LoginView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            const SizedBox(height: 100),
+            const SizedBox(height: 200),
             Image.asset('assets/logo1.png', height: 250, width: 250),
             const SizedBox(height: 135),
             Container(
