@@ -43,7 +43,7 @@ class _TransactionViewState extends State<TransactionView> {
             ),
             SizedBox(height: 26),
             Container(
-              height: 605,
+              constraints: const BoxConstraints(minHeight: 605),
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
               decoration: BoxDecoration(
@@ -64,7 +64,7 @@ class _TransactionViewState extends State<TransactionView> {
                 children: [
                   Container(
                     width: double.infinity,
-                    height: 220,
+                    constraints: const BoxConstraints(minHeight: 220),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       border: BorderDirectional(
@@ -108,7 +108,7 @@ class _TransactionViewState extends State<TransactionView> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.max,
+                              mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
                                   "Nama Product",
@@ -143,7 +143,7 @@ class _TransactionViewState extends State<TransactionView> {
                                     ),
                                   ],
                                 ),
-                                SizedBox(height: 70),
+                                const SizedBox(height: 60),
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   mainAxisSize: MainAxisSize.max,
@@ -156,6 +156,7 @@ class _TransactionViewState extends State<TransactionView> {
                                       children: [
                                         Text(
                                           "Total 3 Produk: Rp. 100.000,00",
+                                          textAlign: TextAlign.end,
                                           style: const TextStyle(
                                             color: Color.fromARGB(255, 0, 0, 0),
                                             fontSize: 14,
@@ -163,48 +164,61 @@ class _TransactionViewState extends State<TransactionView> {
                                             fontFamily: "Popins",
                                           ),
                                         ),
-                                        SizedBox(height: 10),
+                                        const SizedBox(height: 10),
                                         Row(
+                                          mainAxisSize: MainAxisSize.min,
                                           children: [
-                                            Container(
-                                              width: 140,
-                                              height: 30,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                color: Colors.grey[200],
-                                                border: Border.all(
-                                                  color: washedTheme,
-                                                  width: 1.0,
+                                            Flexible(
+                                              child: Container(
+                                                height: 30,
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal: 8,
                                                 ),
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  "Hubungi Penjual",
-                                                  style: const TextStyle(
-                                                    color: Colors.black,
-                                                    fontSize: 16,
-                                                    fontFamily: "Popins",
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                  color: Colors.grey[200],
+                                                  border: Border.all(
+                                                    color: washedTheme,
+                                                    width: 1.0,
+                                                  ),
+                                                ),
+                                                child: const Center(
+                                                  child: Text(
+                                                    "Hubungi Penjual",
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      color: Colors.black,
+                                                      fontSize: 14,
+                                                      fontFamily: "Popins",
+                                                    ),
                                                   ),
                                                 ),
                                               ),
                                             ),
-                                            SizedBox(width: 10),
-                                            Container(
-                                              width: 100,
-                                              height: 30,
-                                              decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
-                                                color: themeColor,
-                                              ),
-                                              child: Center(
-                                                child: Text(
-                                                  "Cek Status",
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 16,
-                                                    fontFamily: "Popins",
+                                            const SizedBox(width: 10),
+                                            Flexible(
+                                              child: Container(
+                                                height: 30,
+                                                padding: const EdgeInsets.symmetric(
+                                                  horizontal: 8,
+                                                ),
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(5),
+                                                  color: themeColor,
+                                                ),
+                                                child: const Center(
+                                                  child: Text(
+                                                    "Cek Status",
+                                                    maxLines: 1,
+                                                    overflow: TextOverflow.ellipsis,
+                                                    style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 14,
+                                                      fontFamily: "Popins",
+                                                    ),
                                                   ),
                                                 ),
                                               ),

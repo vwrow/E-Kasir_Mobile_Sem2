@@ -28,7 +28,7 @@ class AlertMessage {
           color: Colors.transparent,
           child: Center(
             child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
               decoration: BoxDecoration(
                 color: warnafill,
                 boxShadow: const [
@@ -73,13 +73,13 @@ class AlertMessage {
     // set up the buttons
     Widget cancelButton = MaterialButton(
       shape: BeveledRectangleBorder(side: BorderSide()),
-      child: Text("Cancel"),
+      child: Text("Batal"),
       onPressed: () {
         Navigator.of(context).pop({'status': false});
       },
     );
     Widget continueButton = MaterialButton(
-      child: Text("Continue"),
+      child: Text("Hapus"),
       onPressed: () {
         Navigator.of(context).pop({'status': true});
       },

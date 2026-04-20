@@ -137,33 +137,38 @@ class _LoginViewState extends State<LoginView> {
                                 setState(() {
                                   isLoading = true;
                                 });
-                                var data = {
-                                  "email": email.text,
-                                  "password": password.text,
-                                };
-                                var result = await user.loginUser(data);
-                                setState(() {
-                                  isLoading = false;
-                                });
-                                print(result.message);
-                                if (result.status == true) {
-                                  AlertMessage().showAlert(
-                                   context,
-                                    result.message,
-                                    true,
-                                  );
-                                  Future.delayed(Duration(seconds: 2), () {
-                                    Navigator.pushReplacementNamed(
+                                try {
+                                  var data = {
+                                    "email": email.text,
+                                    "password": password.text,
+                                  };
+                                  var result = await user.loginUser(data);
+                                  print(result.message);
+                                  if (result.status == true) {
+                                    AlertMessage().showAlert(
                                       context,
-                                      '/dash',
+                                      result.message,
+                                      true,
                                     );
-                                  });
-                                } else {
-                                  AlertMessage().showAlert(
-                                    context,
-                                    result.message,
-                                    false,
-                                  );
+                                    Future.delayed(Duration(seconds: 2), () {
+                                      Navigator.pushReplacementNamed(
+                                        context,
+                                        '/dash',
+                                      );
+                                    });
+                                  } else {
+                                    AlertMessage().showAlert(
+                                      context,
+                                      result.message,
+                                      false,
+                                    );
+                                  }
+                                } finally {
+                                  if (mounted) {
+                                    setState(() {
+                                      isLoading = false;
+                                    });
+                                  }
                                 }
                               }
                             },

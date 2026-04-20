@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:postman_penugasan1/models/user_login.dart';
 
 class BottomNav extends StatefulWidget {
-  int activePage;
-  BottomNav(this.activePage);
+  final int activePage;
+  const BottomNav(this.activePage, {super.key});
 
   @override
   State<BottomNav> createState() => _BottomNavState();
@@ -13,8 +13,9 @@ class _BottomNavState extends State<BottomNav> {
   UserLogin userLogin = UserLogin();
   String? role;
   getDataLogin() async {
-    var user = await userLogin!.getUserLogin();
-    if (user!.status != false) {
+    var user = await userLogin.getUserLogin();
+    if (!mounted) return;
+    if (user.status != false) {
       setState(() {
         role = user.role;
       });
@@ -86,6 +87,6 @@ class _BottomNavState extends State<BottomNav> {
               ),
             ],
           )
-        : Text("");
+        : const SizedBox.shrink();
   }
 }
