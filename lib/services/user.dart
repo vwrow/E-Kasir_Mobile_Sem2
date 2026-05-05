@@ -93,8 +93,8 @@ class UserService {
       return response;
     }
   }
-  Future getMovieUser() async {
-  var uri = Uri.parse(url.baseUrl + "/user/getmovie");
+  Future getProductUser() async {
+  var uri = Uri.parse(url.baseUrl + "/user/getbarang");
   var user = await UserLogin().getUserLogin();
   if (user.status == false) {
     ResponseDataList response = ResponseDataList(
@@ -132,7 +132,7 @@ class UserService {
   } else {
     ResponseDataList response = ResponseDataList(
       status: false,
-      message: "gagal load movie dengan code error ${getMovie.statusCode}",
+      message: "gagal load dengan code error ${getMovie.statusCode}",
     );
     return response;
   }

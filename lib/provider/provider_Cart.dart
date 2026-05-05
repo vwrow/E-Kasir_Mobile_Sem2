@@ -10,6 +10,7 @@ class CartProvider extends ChangeNotifier {
 
   Future<List<Cart>> getData() async {
     cart = await DBHelper().getCartList();
+    counter = cart.length;
     notifyListeners();
     return cart;
   }

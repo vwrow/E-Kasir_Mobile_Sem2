@@ -1,206 +1,231 @@
 import 'package:flutter/material.dart';
-import 'package:postman_penugasan1/widgets/navBar.dart';
-import 'package:postman_penugasan1/services/products.dart';
-import 'package:postman_penugasan1/models/response_data_list.dart';
 import 'package:postman_penugasan1/models/product_models.dart';
+import 'package:postman_penugasan1/provider/provider_Cart.dart';
+import 'package:postman_penugasan1/models/cart.dart';
+import 'package:postman_penugasan1/services/dbHelper.dart';
+import 'package:postman_penugasan1/services/products.dart';
+import 'package:badges/badges.dart' as badges;
+import 'package:postman_penugasan1/widgets/navBar.dart';
 
-class TestPage extends StatefulWidget {
-  const TestPage({super.key});
+class PesanView extends StatefulWidget {
+  const PesanView({super.key});
 
   @override
-  State<TestPage> createState() => _TestPage();
+  State<PesanView> createState() => _PesanViewState();
 }
 
-class _TestPage extends State<TestPage> {
-  List<ProductModel>? product;
+class _PesanViewState extends State<PesanView> {
+  var dBHelper = DBHelper();
+  final cartProvider = CartProvider();
+  List<ProductModel>? products;
 
-  Future<void> getProduct() async {
-    ResponseDataList getProduct = await ProductService().getProducts();
+  Future<void> getProductUser() async {
+    var result = await ProductService().getUserProducts();
+    if (!mounted) return;
     setState(() {
-      product = (getProduct.data ?? []).cast<ProductModel>();
+      products = (result.data ?? []).cast<ProductModel>();
     });
+  }
+
+  void updateCount() async {
+    await cartProvider.getData();
+    setState(() {
+      cartProvider.counter = cartProvider.cart.length;
+    });
+  }
+
+  void saveData(int index) async {
+    if (products == null || index >= products!.length) return;
+    final product = products![index];
+    var detail = await dBHelper.getCartListDetail(product.id);
+    var qty = 0;
+    if (detail != null && detail.length > 0) {
+      qty = detail[0].quantity;
+    }
+
+    dBHelper
+        .insert(
+          Cart(
+            id: product.id,
+            id_product: product.id.toString(),
+            title: product.namaBarang,
+            voteaverage: product.harga,
+            overview: product.deskripsi,
+            quantity: qty + 1,
+            posterpath: product.image,
+          ),
+        )
+        .then((value) {
+          updateCount();
+          print('Product Added to cart');
+        })
+    // .onError((error, stackTrace) {
+    //   print(error.toString());
+    // })
+    ;
   }
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    getProduct();
-  }
-
-  Widget _buildProductCard(ProductModel p, Color washedTheme) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: washedTheme,
-            width: 2.0,
-          ),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            AspectRatio(
-              aspectRatio: 1,
-              child: (p.image != null && p.image!.isNotEmpty)
-                  ? Image.network(
-                      p.image!,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) {
-                        return Container(
-                          color: Colors.grey,
-                          child: const Icon(Icons.image, color: Colors.black),
-                        );
-                      },
-                    )
-                  : Container(
-                      color: Colors.grey,
-                      child: const Icon(Icons.image, color: Colors.black),
-                    ),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    p.namaBarang ?? "Nama Product",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "Popins",
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    p.deskripsi ?? "Deskripsi singkat panjang banget",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Color.fromARGB(175, 0, 0, 0),
-                      fontSize: 12,
-                      fontFamily: "Popins",
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    "Rp. ${p.harga ?? 0}",
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      color: Color.fromARGB(255, 0, 0, 0),
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: "Popins",
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    getProductUser();
+    updateCount();
   }
 
   @override
   Widget build(BuildContext context) {
-    final themeColor = const Color.fromARGB(255, 230, 114, 41);
-    final washedTheme = const Color.fromARGB(255, 222, 208, 203);
     return Scaffold(
-      backgroundColor: themeColor,
-      bottomNavigationBar: BottomNav(1),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.only(top: 60),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 32.0,
-                vertical: 5,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Text(
-                        "Products",
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: "Popins",
-                        ),
-                      ),
-                      IconButton(
-                        hoverColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        icon: Container(
-                          height: 30,
-                          width: 30,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(30),
-                            color: Colors.white,
-                          ),
-                          child: Icon(
-                            Icons.add,
-                            size: 20,
-                            color: Color.fromARGB(230, 0, 0, 0),
-                          ),
-                        ),
-                        onPressed: () {},
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+      appBar: AppBar(
+        centerTitle: false,
+        backgroundColor: Colors.green,
+        foregroundColor: Colors.white,
+        title: const Text('Product List'),
+        actions: [
+          badges.Badge(
+            badgeContent: ListenableBuilder(
+              listenable: cartProvider,
+              builder: (context, child) {
+                if (cartProvider.cart.isEmpty) {
+                  return Text(
+                    '0',
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                } else {
+                  return Text(
+                    '${cartProvider.counter}',
+                    style: const TextStyle(
+                      color: Color.fromARGB(255, 255, 255, 255),
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                }
+              },
             ),
-            SizedBox(height: 26),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 32),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color.fromARGB(36, 16, 42, 88),
-                    blurRadius: 24,
-                    offset: Offset(0, 20),
-                  ),
-                ],
-              ),
-              child: GridView.builder(
-                itemCount: product?.length ?? 0,
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
-                  childAspectRatio: 0.66,
-                ),
-                itemBuilder: (context, index) {
-                  final p = product![index];
-                  return _buildProductCard(p, washedTheme);
-                },
-              ),
+
+            position: badges.BadgePosition.topEnd(top: 0, end: 2),
+
+            child: IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, "/trans");
+              },
+              icon: const Icon(Icons.shopping_cart),
             ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 20.0),
+        ],
       ),
+      body: products != null
+          ? ListView.builder(
+              padding: const EdgeInsets.symmetric(
+                vertical: 10.0,
+                horizontal: 8.0,
+              ),
+              shrinkWrap: true,
+              itemCount: products!.length,
+              itemBuilder: (context, index) {
+                final item = products![index];
+                return Card(
+                  color: Colors.blueGrey.shade200,
+                  elevation: 5.0,
+                  child: Padding(
+                    padding: const EdgeInsets.all(4.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Image(
+                          height: 80,
+                          width: 80,
+                          image: NetworkImage(item.image ?? ""),
+                        ),
+                        SizedBox(
+                          width: 130,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 5.0),
+                              RichText(
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                                text: TextSpan(
+                                  text: 'Name: ',
+                                  style: TextStyle(
+                                    color: Colors.blueGrey.shade800,
+                                    fontSize: 16.0,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: '${item.namaBarang.toString()}\n',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              RichText(
+                                maxLines: 1,
+                                text: TextSpan(
+                                  text: 'overview: ',
+                                  style: TextStyle(
+                                    color: Colors.blueGrey.shade800,
+                                    fontSize: 16.0,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: '${item.deskripsi.toString()}\n',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              RichText(
+                                maxLines: 1, 
+                                text: TextSpan(
+                                  text:
+                                      'Price: '
+                                      r"$",
+                                  style: TextStyle(
+                                    color: Colors.blueGrey.shade800,
+                                    fontSize: 16.0,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: '${item.harga ?? 0}\n',
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            iconColor: Colors.blueGrey.shade900,
+                          ),
+                          onPressed: () {
+                            saveData(index);
+                            // daga(index);
+                          },
+                          child: const Text('Add to Cart'),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            )
+          : Center(child: Text("data kosong")),
+      bottomNavigationBar: BottomNav(1),
     );
   }
 }

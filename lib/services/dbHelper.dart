@@ -11,7 +11,7 @@ class DBHelper {
       return _database!;
     }
     _database = await initDatabase();
-    return null;
+    return _database!;
   }
 
   initDatabase() async {
@@ -64,6 +64,33 @@ class DBHelper {
       return queryResult.map((result) => Cart.fromMap(result)).toList();
     } catch (e) {
       return null;
+    }
+  }
+
+  Future<void> addOrIncrementCart(Cart cart) async {
+    final dbClient = await database;
+    if (dbClient == null) {
+      throw Exception("Database not initialized");
+    }
+
+    final cartId = cart.id;
+    if (cartId == null) {
+      throw Exception("Cart id is required");
+    }
+
+    // Try increment first.
+    final incrementBy = (cart.quantity ?? 1);
+    final updatedCount = await dbClient.rawUpdate(
+      'UPDATE cart SET quantity = quantity + ? WHERE id = ?',
+      [incrementBy, cartId],
+    );
+
+    if (updatedCount == 0) {
+      await dbClient.insert(
+        'cart',
+        cart.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
     }
   }
 

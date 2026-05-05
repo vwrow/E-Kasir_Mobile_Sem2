@@ -1,6 +1,6 @@
 class Cart {
   late final int? id;
-  final String? id_movie;
+  final String? id_product;
   final String? title;
   final double? voteaverage;
   final String? overview;
@@ -9,7 +9,7 @@ class Cart {
 
   Cart({
     required this.id,
-    required this.id_movie,
+    required this.id_product,
     required this.title,
     required this.voteaverage,
     required this.overview,
@@ -20,11 +20,14 @@ class Cart {
   factory Cart.fromMap(Map<dynamic, dynamic> data) {
     return Cart(
       id: data['id'],
-      id_movie: data['id'].toString(),
+      id_product: data['id'].toString(),
       title: data['title'],
-      voteaverage: double.parse(data['voteaverage'].toString()),
+      // Be tolerant: cart rows may contain null/invalid voteaverage values.
+      voteaverage: data['voteaverage'] == null
+          ? null
+          : double.tryParse(data['voteaverage'].toString()),
       overview: data['overview'],
-      quantity: data['quantity'],
+      quantity: data['quantity'] == null ? null : (data['quantity'] as num).toInt(),
       posterpath: data['posterpath'],
     );
   }
@@ -32,7 +35,8 @@ class Cart {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'id_movie': id_movie,
+      // Match DB schema column name.
+      'id_movie': id_product,
       'title': title,
       'voteaverage': voteaverage,
       'overview': overview,

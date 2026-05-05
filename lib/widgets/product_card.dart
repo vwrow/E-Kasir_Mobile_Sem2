@@ -6,7 +6,8 @@ class ProductCard extends StatelessWidget {
   final Color borderColor;
   final bool showAdminActions;
   final List<String> adminActions;
-  final Future<void> Function(String action, ProductModel product)? onAdminAction;
+  final Future<void> Function(String action, ProductModel product)?
+  onAdminAction;
   final VoidCallback? onTap;
 
   const ProductCard({
@@ -32,10 +33,7 @@ class ProductCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(
-                color: borderColor,
-                width: 2.0,
-              ),
+              border: Border.all(color: borderColor, width: 2.0),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -44,20 +42,27 @@ class ProductCard extends StatelessWidget {
                   children: [
                     AspectRatio(
                       aspectRatio: 1,
-                      child: (product.image != null && product.image!.isNotEmpty)
+                      child:
+                          (product.image != null && product.image!.isNotEmpty)
                           ? Image.network(
                               product.image!,
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) {
                                 return Container(
                                   color: Colors.grey,
-                                  child: const Icon(Icons.image, color: Colors.black),
+                                  child: const Icon(
+                                    Icons.image,
+                                    color: Colors.black,
+                                  ),
                                 );
                               },
                             )
                           : Container(
                               color: Colors.grey,
-                              child: const Icon(Icons.image, color: Colors.black),
+                              child: const Icon(
+                                Icons.image,
+                                color: Colors.black,
+                              ),
                             ),
                     ),
                     if (showAdminActions)
@@ -70,7 +75,10 @@ class ProductCard extends StatelessWidget {
                               color: Colors.black.withOpacity(0.2),
                               shape: BoxShape.circle,
                             ),
-                            child: const Icon(Icons.more_vert, color: Colors.white),
+                            child: const Icon(
+                              Icons.more_vert,
+                              color: Colors.white,
+                            ),
                           ),
                           onSelected: (action) async {
                             if (onAdminAction != null) {
@@ -92,7 +100,10 @@ class ProductCard extends StatelessWidget {
                   ],
                 ),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 15,
+                    vertical: 12,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,

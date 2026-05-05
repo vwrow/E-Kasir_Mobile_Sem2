@@ -1,17 +1,69 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:postman_penugasan1/models/cart.dart';
 import 'package:postman_penugasan1/models/product_models.dart';
+import 'package:postman_penugasan1/services/dbHelper.dart';
+import 'package:postman_penugasan1/provider/provider_Cart.dart';
+import 'package:postman_penugasan1/widgets/alert.dart';
 
-class ProductDetailView extends StatelessWidget {
+class ProductDetailView extends StatefulWidget {
   final ProductModel product;
 
   const ProductDetailView({super.key, required this.product});
 
   @override
+  State<ProductDetailView> createState() => _ProductDetailViewState();
+}
+
+class _ProductDetailViewState extends State<ProductDetailView> {
+  final dBHelper = DBHelper();
+  bool _isAdding = false;
+
+  Future<void> _addToCartAndGoToTransaksi() async {
+    final productId = widget.product.id;
+    if (productId == null) {
+      AlertMessage().showAlert(context, "Produk tidak valid", false);
+      return;
+    }
+
+    final cartProvider = context.read<CartProvider>();
+    setState(() => _isAdding = true);
+    try {
+      await dBHelper.addOrIncrementCart(
+        Cart(
+          id: productId,
+          id_product: productId.toString(),
+          title: widget.product.namaBarang,
+          voteaverage: widget.product.harga,
+          overview: widget.product.deskripsi,
+          quantity: 1,
+          posterpath: widget.product.image ?? '',
+        ),
+      );
+
+      // Refresh global cart state so widgets listening to CartProvider update.
+      await cartProvider.getData();
+
+      if (!mounted) return;
+      AlertMessage().showAlert(context, "Produk ditambahkan ke cart", true);
+    } catch (e) {
+      if (!mounted) return;
+      AlertMessage().showAlert(
+        context,
+        "Gagal menambahkan ke cart: ${e.toString()}",
+        false,
+      );
+    } finally {
+      if (mounted) setState(() => _isAdding = false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final themeColor = const Color.fromARGB(255, 230, 114, 41);
-    final productName = product.namaBarang ?? "Nama Barang";
-    final productDesc = product.deskripsi ?? "Deskripsi tidak tersedia";
-    final stock = product.stok ?? 0;
+    final productName = widget.product.namaBarang ?? "Nama Barang";
+    final productDesc = widget.product.deskripsi ?? "Deskripsi tidak tersedia";
+    final stock = widget.product.stok ?? 0;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -33,14 +85,17 @@ class ProductDetailView extends StatelessWidget {
           children: [
             AspectRatio(
               aspectRatio: 1.1,
-              child: (product.image != null && product.image!.isNotEmpty)
+              child: (widget.product.image != null && widget.product.image!.isNotEmpty)
                   ? Image.network(
-                      product.image!,
+                      widget.product.image!,
                       fit: BoxFit.cover,
                       errorBuilder: (context, error, stackTrace) {
                         return Container(
                           color: Colors.grey.shade300,
-                          child: const Icon(Icons.image_not_supported, size: 44),
+                          child: const Icon(
+                            Icons.image_not_supported,
+                            size: 44,
+                          ),
                         );
                       },
                     )
@@ -106,6 +161,41 @@ class ProductDetailView extends StatelessWidget {
               ),
             ),
           ],
+        ),
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: SizedBox(
+            height: 52,
+            width: double.infinity,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: themeColor,
+                foregroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+              ),
+              onPressed: _isAdding ? null : _addToCartAndGoToTransaksi,
+              child: _isAdding
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.white,
+                      ),
+                    )
+                  : const Text(
+                      "Add to Cart",
+                      style: TextStyle(
+                        fontFamily: "Popins",
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+            ),
+          ),
         ),
       ),
     );
